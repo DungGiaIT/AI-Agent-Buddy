@@ -1,0 +1,5 @@
+{
+  "buildCommand": "mkdir -p public && echo 'Proxy is running' > public/index.html",
+  "outputDirectory": "public",
+  "installCommand": "npm install --legacy-peer-deps"
+}
