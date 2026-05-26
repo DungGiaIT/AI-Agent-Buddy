@@ -214,11 +214,14 @@ export async function scheduleDailyReminder(hour: number, minute: number, tone: 
 
     await Notifications.cancelAllScheduledNotificationsAsync();
 
-    let body = "Đã đến giờ học rồi! Mở app ra và hoàn thành nhiệm vụ hôm nay thôi nào! 🔥";
+    const currentStreak = await getStreak();
+    const streakMsg = currentStreak > 0 ? ` Bạn đang có chuỗi kỷ luật ${currentStreak} ngày, đừng để bị đứt đoạn nhé!` : ` Bắt đầu xây dựng chuỗi kỷ luật ngay hôm nay!`;
+
+    let body = `Đã đến giờ học rồi! Mở app ra và hoàn thành nhiệm vụ hôm nay thôi nào! 🔥${streakMsg}`;
     if (tone === 'strict') {
-      body = "Deadline học bài đến rồi! Đừng trì hoãn nữa, mở app và học ngay! 😡";
+      body = `Deadline học bài đến rồi! Đừng trì hoãn nữa, mở app và học ngay nếu không muốn mất chuỗi ${currentStreak} ngày! 😡`;
     } else if (tone === 'funny') {
-      body = "Alo alo! Học nhanh lên không cái điện thoại nó thông minh hơn bạn mất! 😜";
+      body = `Alo alo! Học nhanh lên không cái điện thoại nó thông minh hơn bạn mất! Mở app để giữ chuỗi ${currentStreak} ngày nào! 😜`;
     }
 
     await Notifications.scheduleNotificationAsync({
@@ -226,6 +229,7 @@ export async function scheduleDailyReminder(hour: number, minute: number, tone: 
         title: "🎓 AI Study Buddy Cảnh Báo!",
         body: body,
         sound: true,
+        data: { url: '/' }, // Deep Link đến màn hình Home (để nộp bài)
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DAILY,
@@ -240,8 +244,8 @@ export async function scheduleDailyReminder(hour: number, minute: number, tone: 
 
 // Client-side Gemini API Services
 export async function generateRoadmapFromAI(goal: string, apiKey: string): Promise<DayTask[]> {
-  // Gọi qua Vercel Proxy để bảo mật API Key
-  const url = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api/gemini';
+  // Gọi qua Vercel Proxy để bảo mật API Key (Hardcode để tránh lỗi cache .env)
+  const url = 'https://ai-agent-buddy.vercel.app/api/gemini';
 
   const prompt = `You are an elite AI Study Buddy coach who specializes in helping students beat procrastination.
 The user wants to achieve this learning goal in 7 days: "${goal}".
@@ -322,8 +326,8 @@ export async function evaluateFeynmanSummary(
   apiKey: string,
   tone: 'friendly' | 'strict' | 'funny'
 ): Promise<{ success: boolean; rating: number; feedback: string }> {
-  // Gọi qua Vercel Proxy để bảo mật API Key
-  const url = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api/gemini';
+  // Gọi qua Vercel Proxy để bảo mật API Key (Hardcode để tránh lỗi cache .env)
+  const url = 'https://ai-agent-buddy.vercel.app/api/gemini';
 
   const prompt = `You are a professional tutor. A student is trying to explain the core concept of "[concept]" as part of their study task: "[taskTitle]".
 The student's Feynman explanation is: "${summary}".

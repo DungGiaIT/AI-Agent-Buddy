@@ -12,7 +12,6 @@ export default function RoadmapScreen() {
 
   const [roadmap, setRoadmap] = useState<DayTask[]>([]);
   const [goal, setGoal] = useState('');
-  const [apiKey, setApiKey] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
@@ -29,7 +28,6 @@ export default function RoadmapScreen() {
       setRoadmap(storedRoadmap);
       
       const config = await getSettings();
-      setApiKey(config.apiKey);
       setGoal(config.goal);
     } catch (e) {
       console.error(e);
@@ -44,22 +42,10 @@ export default function RoadmapScreen() {
       return;
     }
 
-    if (!apiKey.trim()) {
-      Alert.alert(
-        'Thiếu API Key 🔑',
-        'Vui lòng cấu hình Gemini API Key trước để sử dụng tính năng tạo lộ trình bằng AI. Bạn có muốn chuyển sang màn hình Cài đặt ngay không?',
-        [
-          { text: 'Hủy', style: 'cancel' },
-          { text: 'Đến Cài đặt', onPress: () => router.push('/settings' as any) }
-        ]
-      );
-      return;
-    }
-
     setIsGenerating(true);
     try {
       // 1. Generate via AI
-      const generated = await generateRoadmapFromAI(goal, apiKey);
+      const generated = await generateRoadmapFromAI(goal, '');
       
       // 2. Save settings and roadmap
       const config = await getSettings();

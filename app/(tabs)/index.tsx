@@ -200,6 +200,21 @@ export default function HomeScreen() {
             </ThemedView>
           </ThemedView>
 
+          {/* Quick Start Guide */}
+          {roadmap.length === 0 && (
+            <ThemedView style={[styles.card, { borderColor: colors.border, padding: 20, marginTop: 16, backgroundColor: colors.backgroundSelected }]}>
+              <ThemedText type="subtitle" style={{ color: colors.accent, marginBottom: 8 }}>📖 Hướng dẫn nhanh</ThemedText>
+              <ThemedText type="small" style={{ color: colors.text, marginBottom: 4, fontWeight: 'bold' }}>1️⃣ Thiết lập lộ trình 7 ngày</ThemedText>
+              <ThemedText type="small" style={{ color: colors.textSecondary, marginBottom: 12, marginLeft: 24 }}>Chuyển sang tab Roadmap để tạo lộ trình học tập.</ThemedText>
+              
+              <ThemedText type="small" style={{ color: colors.text, marginBottom: 4, fontWeight: 'bold' }}>2️⃣ Bấm Bắt đầu & Học tập trung</ThemedText>
+              <ThemedText type="small" style={{ color: colors.textSecondary, marginBottom: 12, marginLeft: 24 }}>Quay lại đây mỗi ngày để hoàn thành 1 phiên 30 phút.</ThemedText>
+              
+              <ThemedText type="small" style={{ color: colors.text, marginBottom: 4, fontWeight: 'bold' }}>3️⃣ Nộp bài Feynman</ThemedText>
+              <ThemedText type="small" style={{ color: colors.textSecondary, marginLeft: 24 }}>Viết tóm tắt bằng ngôn từ của bạn. AI sẽ chấm điểm!</ThemedText>
+            </ThemedView>
+          )}
+
           {/* Goal Not Set / No Roadmap Empty State */}
           {roadmap.length === 0 ? (
             <ThemedView style={[styles.card, { borderColor: colors.border, padding: 24, alignItems: 'center' }]}>

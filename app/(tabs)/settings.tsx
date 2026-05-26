@@ -9,7 +9,6 @@ import { getSettings, saveSettings, clearAllData } from '@/services/study-store'
 export default function SettingsScreen() {
   const colors = useTheme();
   
-  const [apiKey, setApiKey] = useState('');
   const [goal, setGoal] = useState('');
   const [studyTime, setStudyTime] = useState('20:00');
   const [tone, setTone] = useState<'friendly' | 'strict' | 'funny'>('friendly');
@@ -23,7 +22,6 @@ export default function SettingsScreen() {
   const loadSettings = async () => {
     try {
       const config = await getSettings();
-      setApiKey(config.apiKey);
       setGoal(config.goal);
       setStudyTime(config.studyTime || '20:00');
       setTone(config.tone || 'friendly');
@@ -35,14 +33,9 @@ export default function SettingsScreen() {
   };
 
   const handleSave = async () => {
-    if (!apiKey.trim()) {
-      Alert.alert('Cảnh báo', 'Vui lòng nhập Gemini API Key để kích hoạt trợ lý AI.');
-      return;
-    }
-    
     setIsSaving(true);
     try {
-      await saveSettings({ apiKey, goal, studyTime, tone });
+      await saveSettings({ apiKey: '', goal, studyTime, tone });
       Alert.alert('Thành công', 'Đã lưu cấu hình trợ lý AI Study Buddy!');
     } catch (e) {
       Alert.alert('Lỗi', 'Không thể lưu cấu hình.');
@@ -62,7 +55,6 @@ export default function SettingsScreen() {
           style: 'destructive',
           onPress: async () => {
             await clearAllData();
-            setApiKey('');
             setGoal('');
             setStudyTime('20:00');
             setTone('friendly');
@@ -91,24 +83,6 @@ export default function SettingsScreen() {
             </ThemedText>
             <ThemedText type="small" style={{ color: colors.textSecondary }}>
               Thiết lập API key và lộ trình học tập diệt trì hoãn của bạn
-            </ThemedText>
-          </ThemedView>
-
-          {/* Setup API key Card */}
-          <ThemedView style={[styles.card, { borderColor: colors.border }]}>
-            <ThemedText type="smallBold" style={[styles.cardTitle, { color: colors.accent }]}>
-              🔑 GEMINI API KEY
-            </ThemedText>
-            <TextInput
-              style={[styles.input, { borderColor: colors.border, color: colors.text, backgroundColor: colors.background }]}
-              placeholder="Nhập Gemini API Key của bạn..."
-              placeholderTextColor={colors.textSecondary}
-              value={apiKey}
-              onChangeText={setApiKey}
-              secureTextEntry={true}
-            />
-            <ThemedText type="small" style={[styles.hint, { color: colors.textSecondary }]}>
-              API Key được lưu trữ ngoại tuyến bảo mật trên thiết bị của bạn.
             </ThemedText>
           </ThemedView>
 

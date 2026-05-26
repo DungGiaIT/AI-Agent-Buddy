@@ -7,6 +7,8 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import * as Notifications from 'expo-notifications';
+import { useRouter } from 'expo-router';
 
 import { LogBox } from 'react-native';
 
@@ -21,6 +23,8 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const router = useRouter();
+  
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -30,6 +34,17 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
+
+  // Xử lý Deep Link khi bấm vào Notification
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const url = response.notification.request.content.data?.url;
+      if (url) {
+        router.push(url as any);
+      }
+    });
+    return () => subscription.remove();
+  }, [router]);
 
   if (!loaded) {
     return null;

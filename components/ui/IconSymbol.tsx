@@ -14,6 +14,7 @@ const MAPPING = {
   'gearshape.fill': 'settings',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+  'book.fill': 'menu-book',
 } as Partial<
   Record<
     import('expo-symbols').SymbolViewProps['name'],
