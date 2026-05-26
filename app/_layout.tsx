@@ -8,6 +8,14 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 
+import { LogBox } from 'react-native';
+
+// Suppress built-in expo-notifications warning/error in Expo Go environment
+LogBox.ignoreLogs([
+  'expo-notifications',
+  '`expo-notifications` functionality is not fully supported in Expo Go',
+]);
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
