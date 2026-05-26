@@ -30,8 +30,8 @@ export default async function handler(
       return res.status(500).json({ error: 'Lỗi máy chủ: Chưa cấu hình GEMINI_API_KEY' });
     }
 
-    // Gọi đến mô hình gemini-2.0-flash-lite-preview-02-05 (bản Flash Lite mới nhất)
-    const model = 'gemini-2.0-flash-lite-preview-02-05';
+    // Sử dụng model gemini-3.1-flash-lite theo yêu cầu
+    const model = 'gemini-3.1-flash-lite';
     const targetUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
 
     // Chuyển tiếp nguyên vẹn body từ Client (bao gồm cả prompt và generationConfig)
