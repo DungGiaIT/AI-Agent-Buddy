@@ -6,7 +6,6 @@ import * as Notifications from 'expo-notifications';
 if (Platform.OS !== 'web') {
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
-      shouldShowAlert: true,
       shouldPlaySound: true,
       shouldSetBadge: false,
       shouldShowBanner: true,
@@ -206,35 +205,64 @@ export async function requestNotificationPermission() {
   }
 }
 
+async function setupNotificationChannels() {
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('channel_friendly', {
+      name: 'Friendly Reminder',
+      importance: Notifications.AndroidImportance.HIGH,
+      sound: 'friendly.wav',
+    });
+    await Notifications.setNotificationChannelAsync('channel_strict', {
+      name: 'Strict Reminder',
+      importance: Notifications.AndroidImportance.HIGH,
+      sound: 'strict.wav',
+    });
+    await Notifications.setNotificationChannelAsync('channel_funny', {
+      name: 'Funny Reminder',
+      importance: Notifications.AndroidImportance.HIGH,
+      sound: 'funny.wav',
+    });
+  }
+}
+
 export async function scheduleDailyReminder(hour: number, minute: number, tone: 'friendly' | 'strict' | 'funny') {
   if (isWeb) return;
   try {
     const permitted = await requestNotificationPermission();
     if (!permitted) return;
 
+    await setupNotificationChannels();
     await Notifications.cancelAllScheduledNotificationsAsync();
 
     const currentStreak = await getStreak();
     const streakMsg = currentStreak > 0 ? ` Bạn đang có chuỗi kỷ luật ${currentStreak} ngày, đừng để bị đứt đoạn nhé!` : ` Bắt đầu xây dựng chuỗi kỷ luật ngay hôm nay!`;
 
     let body = `Đã đến giờ học rồi! Mở app ra và hoàn thành nhiệm vụ hôm nay thôi nào! 🔥${streakMsg}`;
+    let channelId = 'channel_friendly';
+    let soundFile = 'friendly.wav';
+
     if (tone === 'strict') {
       body = `Deadline học bài đến rồi! Đừng trì hoãn nữa, mở app và học ngay nếu không muốn mất chuỗi ${currentStreak} ngày! 😡`;
+      channelId = 'channel_strict';
+      soundFile = 'strict.wav';
     } else if (tone === 'funny') {
       body = `Alo alo! Học nhanh lên không cái điện thoại nó thông minh hơn bạn mất! Mở app để giữ chuỗi ${currentStreak} ngày nào! 😜`;
+      channelId = 'channel_funny';
+      soundFile = 'funny.wav';
     }
 
     await Notifications.scheduleNotificationAsync({
       content: {
         title: "🎓 AI Study Buddy Cảnh Báo!",
         body: body,
-        sound: true,
+        sound: soundFile,
         data: { url: '/' }, // Deep Link đến màn hình Home (để nộp bài)
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DAILY,
         hour: hour,
         minute: minute,
+        channelId: channelId,
       } as any,
     });
   } catch (e) {
